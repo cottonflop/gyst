@@ -1,7 +1,7 @@
 {
-  "name": "gystjs",
+  "name": "gyst",
   "version": "0.0.1",
-  "description": "GystJS",
+  "description": "Gyst",
   "main": "index.js",
   "scripts": {
     "test": "gulp test"
