@@ -1,0 +1,29 @@
+{
+  "name": "gystjs",
+  "version": "0.0.1",
+  "description": "GystJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "keywords": [
+    "qa",
+    "automation"
+  ],
+  "author": "Betsy Fox <betsyjfox@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  },
+  "dependencies": {
+    "minimatch": "^3.0.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cottonflop/gyst.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cottonflop/gyst/issues"
+  },
+  "homepage": "https://github.com/cottonflop/gyst#readme"
+}
