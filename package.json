@@ -1,29 +1,40 @@
 {
-  "name": "gyst",
-  "version": "0.0.1",
-  "description": "Gyst",
-  "main": "index.js",
-  "scripts": {
-    "test": "gulp test"
-  },
-  "keywords": [
-    "qa",
-    "automation"
-  ],
-  "author": "Betsy Fox <betsyjfox@gmail.com>",
-  "license": "MIT",
-  "devDependencies": {
-    "gulp": "^3.9.1"
-  },
-  "dependencies": {
-    "minimatch": "^3.0.4"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cottonflop/gyst.git"
-  },
-  "bugs": {
-    "url": "https://github.com/cottonflop/gyst/issues"
-  },
-  "homepage": "https://github.com/cottonflop/gyst#readme"
+	"name": "gyst",
+	"version": "0.0.0",
+	"description": "A flexible automated testing framework",
+	"license": "MIT",
+	"repository": "cottonflop/gyst",
+	"author": {
+		"name": "Betsy Fox",
+		"email": "cottonflop@gmail.com",
+		"url": "github.com/cottonflop/gyst"
+	},
+	"bin": {
+		"gyst": "./index.js"
+	},
+	"engines": {
+		"node": ">=4"
+	},
+	"files": [
+		"index.js"
+	],
+	"keywords": [
+		"cli-app",
+		"cli"
+	],
+	"dependencies": {
+		"chalk": "^1.1.3",
+		"clear": "0.0.1",
+		"clui": "^0.3.1",
+		"figlet": "^1.1.2",
+		"github": "^2.1.0",
+		"inquirer": "^1.1.0",
+		"lodash": "^4.13.1",
+		"meow": "^3.7.0",
+		"minimist": "^1.2.0",
+		"preferences": "^0.2.1",
+		"simple-git": "^1.40.0",
+		"testrail-api": "^1.0.6",
+		"touch": "^1.0.0"
+	}
 }

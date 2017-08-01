@@ -1,13 +1,4 @@
-.DS_Store
-*.log
 node_modules
-build
-*.node
-components
+yarn.lock
+.nyc_output
 coverage
-*.orig
-.idea
-sandbox
-test/out-fixtures/*
-test/watch-*.txt
-gulp.1
