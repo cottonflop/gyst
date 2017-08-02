@@ -2,3 +2,10 @@ node_modules
 yarn.lock
 .nyc_output
 coverage
+package-lock.json
+.DS_Store
+.editorconfig
+.gitattributes
+.npmrc
+.travis.yml
+.yo-rc.json

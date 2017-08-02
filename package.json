@@ -19,8 +19,11 @@
 		"index.js"
 	],
 	"keywords": [
-		"cli-app",
-		"cli"
+		"gyst",
+		"automated testing",
+		"testing",
+		"tdd",
+		"bdd"
 	],
 	"dependencies": {
 		"chalk": "^1.1.3",
