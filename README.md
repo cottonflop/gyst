@@ -1,4 +1,4 @@
-# Gyst! ![Gyst!](resources/gyst.png?raw=true =48)
+# Gyst! <img src="resources/gyst.png" width="48">
 
 > Your friendly, flexible, automated testing framework
 
