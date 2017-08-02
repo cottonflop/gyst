@@ -1,4 +1,4 @@
-# Gyst! <img src="resources/gyst.png" width="48">
+# <img src="resources/gyst.png" width="48"> Gyst!
 
 > Your friendly, flexible, automated testing framework
 
