@@ -1,4 +1,4 @@
-# Gyst! ![Gyst!](relative/path/to/img.jpg?raw=true =48)
+# Gyst! ![Gyst!](resources/gyst.png?raw=true =48)
 
 > Your friendly, flexible, automated testing framework
 
