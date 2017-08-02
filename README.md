@@ -1,6 +1,8 @@
-# Gyst
+# Gyst! ![Gyst!](relative/path/to/img.jpg?raw=true =48)
 
-> A flexible automated testing framework
+> Your friendly, flexible, automated testing framework
+
+
 
 ## License
 
