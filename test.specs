@@ -4,6 +4,14 @@ Scenario: eat 5 out of 12
   Then I should have 7 cucumbers
 
 Scenario: eat 5 out of 20
-  Given there are 20 cucumbers
-  When I eat 5 cucumbers
-  Then I should have 15 cucumbers
+	Given there are 20 cucumbers
+	When I eat 5 cucumbers
+	Then I should have 15 cucumbers
+
+Scenario: Duct tape a spider to the garage
+	Given I have a garage
+	And I have a spider
+	And I have duct tape
+	If I successfully duct tape the spider to the garage
+	Then the spider should be stuck to the garage
+	Otherwise the spider will roam free

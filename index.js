@@ -30,11 +30,25 @@ splash();
 process.argv.forEach((val, index) => {
   // console.log(`${index}) ${typeof val}: ${val}`);
   if (index > 1) { //skip node & script name
-  	spec = files.asArray(`${process.cwd()}/${val}`);
-  	specs.parse(spec);
+  	specFiles = files.ls(`${process.cwd()}/${val}`);
+  	specFile = specFiles.next();
+  	while (specFile.done == false) {
+  		console.log(specFile.value);
+  		specFile = specFiles.next();
+  	}
+  }
+
+  	// specs = files.lines(`${process.cwd()}/${val}`);
+
+  	// while (line = specs.next()) {
+  	// 	console.log(line);
+  	// }
+  	// console.log();
+  	// spec = files.asArray(`${process.cwd()}/${val}`);
+  	// specs.parse(spec);
   	// console.log();
   	// console.log(`${process.cwd()}/${val}`);
   	// console.log(files.asArray(`${process.cwd()}/${val}`));
-  }
+  // }
 });
 
