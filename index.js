@@ -32,11 +32,19 @@ process.argv.forEach((val, index) => {
   if (index > 1) { //skip node & script name
   	specFiles = files.ls(`${process.cwd()}/${val}`);
   	specFile = specFiles.next();
-  	while (specFile.done == false) {
+  	while (!specFile.done) {
+  		console.log("=======================");
   		console.log(specFile.value);
+  		console.log("=======================");
+  		specs = files.lines(specFile.value);
+  		line = specs.next();
+		while (!line.done) {
+			console.log(line.value);
+	  		line = specs.next();
+		}
   		specFile = specFiles.next();
+  		console.log();
   	}
-  }
 
   	// specs = files.lines(`${process.cwd()}/${val}`);
 
@@ -50,5 +58,7 @@ process.argv.forEach((val, index) => {
   	// console.log(`${process.cwd()}/${val}`);
   	// console.log(files.asArray(`${process.cwd()}/${val}`));
   // }
+}
+
 });
 
