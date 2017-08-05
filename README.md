@@ -6,4 +6,4 @@
 
 ## License
 
-MIT © [Betsy Fox](https://github.com/cottonflop/gyst)
+MIT ©2015-2017 [Betsy Fox](https://github.com/cottonflop/gyst)
