@@ -30,7 +30,7 @@ args.shift();
 
 
 
-splash();
+// splash();
 
 args.forEach((val, index) => {
   // console.log(`${index}) ${typeof val}: ${val}`);
