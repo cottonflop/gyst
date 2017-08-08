@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 
-gulp.task('test', function() {
-  console.log('Hello, world.');
+gulp.task('default', function() {
+  spawn('gyst', ['specs']);
 });
+

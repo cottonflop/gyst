@@ -13,7 +13,7 @@ var touch       = require('touch');
 var fs          = require('fs');
 var files       = require('./lib/files.js');
 
-var specs = require('./lib/specs.js')
+var { parse } = require('./lib/parser.js')
 
 splash = function() {
 	clear();
@@ -29,6 +29,7 @@ splash();
 
 process.argv.forEach((val, index) => {
   // console.log(`${index}) ${typeof val}: ${val}`);
+  console.log(`${index}: "${val}"`)
   if (index > 1) { //skip node & script name
   	specFiles = files.ls(`${process.cwd()}/${val}`);
   	specFile = specFiles.next();
@@ -39,7 +40,8 @@ process.argv.forEach((val, index) => {
   		specs = files.lines(specFile.value);
   		line = specs.next();
 		while (!line.done) {
-			console.log(line.value);
+			// console.log(line.value);
+			parse(line.value);
 	  		line = specs.next();
 		}
   		specFile = specFiles.next();
