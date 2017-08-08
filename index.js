@@ -33,8 +33,6 @@ args.shift();
 // splash();
 
 args.forEach((val, index) => {
-  // console.log(`${index}) ${typeof val}: ${val}`);
-  // console.log(`${index}: "${val}"`)
 	specFiles = files.ls(`${process.cwd()}/${val}`);
 		specFile = specFiles.next();
 		let lineNumber = 0;
@@ -56,18 +54,5 @@ args.forEach((val, index) => {
 			specFile = specFiles.next();
 			console.log();
 		}
-
-  	// specs = files.lines(`${process.cwd()}/${val}`);
-
-  	// while (line = specs.next()) {
-  	// 	console.log(line);
-  	// }
-  	// console.log();
-  	// spec = files.asArray(`${process.cwd()}/${val}`);
-  	// specs.parse(spec);
-  	// console.log();
-  	// console.log(`${process.cwd()}/${val}`);
-  	// console.log(files.asArray(`${process.cwd()}/${val}`));
-  // }
 });
 
