@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 var chalk       = require('chalk');
 var clear       = require('clear');
-var CLI         = require('clui');
+var cli         = require('cli');
 var figlet      = require('figlet');
 var inquirer    = require('inquirer');
 var Preferences = require('preferences');
-var Spinner     = CLI.Spinner;
 var GitHubApi   = require('github');
 var _           = require('lodash');
 var git         = require('simple-git')();
@@ -13,7 +12,8 @@ var touch       = require('touch');
 var fs          = require('fs');
 var files       = require('./lib/files.js');
 
-var { parse } = require('./lib/parser.js')
+// var { options } = require('./lib/options.js');
+var { parse }   = require('./lib/parser.js')
 
 splash = function() {
 	clear();
@@ -24,43 +24,35 @@ splash = function() {
 	);
 }
 
+args = process.argv;
+args.shift();
+args.shift();
 
-splash();
 
-process.argv.forEach((val, index) => {
-  // console.log(`${index}) ${typeof val}: ${val}`);
-  console.log(`${index}: "${val}"`)
-  if (index > 1) { //skip node & script name
-  	specFiles = files.ls(`${process.cwd()}/${val}`);
-  	specFile = specFiles.next();
-  	while (!specFile.done) {
-  		console.log("=======================");
-  		console.log(specFile.value);
-  		console.log("=======================");
-  		specs = files.lines(specFile.value);
-  		line = specs.next();
+
+// splash();
+
+args.forEach((val, index) => {
+	specFiles = files.ls(`${process.cwd()}/${val}`);
+		specFile = specFiles.next();
+		let lineNumber = 0;
+		while (!specFile.done) {
+			console.log("=======================");
+			console.log(`Processing ${specFile.value}...`);
+			console.log("=======================");
+			specs = files.lines(specFile.value);
+			line = specs.next();
 		while (!line.done) {
-			// console.log(line.value);
-			parse(line.value);
+			try {
+				lineNumber++;
+				parse(line.value);
+			} catch(err) {
+				console.log(`${err.message} (${specFile.value}:${lineNumber})`);
+			}
 	  		line = specs.next();
 		}
-  		specFile = specFiles.next();
-  		console.log();
-  	}
-
-  	// specs = files.lines(`${process.cwd()}/${val}`);
-
-  	// while (line = specs.next()) {
-  	// 	console.log(line);
-  	// }
-  	// console.log();
-  	// spec = files.asArray(`${process.cwd()}/${val}`);
-  	// specs.parse(spec);
-  	// console.log();
-  	// console.log(`${process.cwd()}/${val}`);
-  	// console.log(files.asArray(`${process.cwd()}/${val}`));
-  // }
-}
-
+			specFile = specFiles.next();
+			console.log();
+		}
 });
 

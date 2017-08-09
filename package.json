@@ -1,6 +1,6 @@
 {
 	"name": "gyst",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "A flexible automated testing framework",
 	"license": "MIT",
 	"repository": "cottonflop/gyst",
@@ -13,7 +13,7 @@
 		"gyst": "./index.js"
 	},
 	"engines": {
-		"node": ">=4"
+		"node": ">=6"
 	},
 	"files": [
 		"index.js"
@@ -28,7 +28,7 @@
 	"dependencies": {
 		"chalk": "^1.1.3",
 		"clear": "0.0.1",
-		"clui": "^0.3.1",
+		"cli": "^1.0.1",
 		"figlet": "^1.1.2",
 		"github": "^2.1.0",
 		"inquirer": "^1.1.0",
