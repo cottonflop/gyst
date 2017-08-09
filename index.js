@@ -14,6 +14,7 @@ var files       = require('./lib/files.js');
 
 // var { options } = require('./lib/options.js');
 var { parse }   = require('./lib/parser.js')
+var catalog   = require('./lib/catalog.js')
 
 splash = function() {
 	clear();
@@ -29,10 +30,15 @@ args.shift();
 args.shift();
 
 
+catalog.context("fnord");
+catalog.set("whatwhat", "31337");
+console.log(catalog.get("whatwhat"));
+catalog.context("default");
+console.log(catalog.get("whatwhat"));
 
 // splash();
 
-args.forEach((val, index) => {
+/* args.forEach((val, index) => {
 	specFiles = files.ls(`${process.cwd()}/${val}`);
 		specFile = specFiles.next();
 		let lineNumber = 0;
@@ -56,3 +62,4 @@ args.forEach((val, index) => {
 		}
 });
 
+*/
