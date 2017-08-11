@@ -14,6 +14,7 @@ var files       = require('./lib/files.js');
 
 // var { options } = require('./lib/options.js');
 var { parse }   = require('./lib/parser.js')
+var catalog   = require('./lib/catalog.js')
 
 splash = function() {
 	clear();
@@ -29,10 +30,29 @@ args.shift();
 args.shift();
 
 
+// catalog.context("fnord");
+// catalog.set("whatwhat", "31337");
+// console.log(catalog.get("whatwhat"));
+// catalog.context("default");
+// console.log(catalog.get("whatwhat"));
+
+catalog.context("procs")
+
+catalog.set(/i am a regex (.*) with arbitrary (.*) groups in it!/, function(p) { console.log(p, `I enjoy riding the ${p[1]}, but not on the ${p[2]}!`); });
+catalog.set(/i am a regex with no groups in it!/, function() { console.log("I am the function attached to the second regex"); });
+catalog.set("i'm not even a regex, bro", function() { console.log("I am the function attached to the third regex"); });
+
+({func, args} = catalog.get_call("i am a regex with with with and with with arbitrary whatwhatwhat what what groups in it!"));
+// console.log(m);
+// console.log(args)
+func(args);
+
+
+// console.log(catalog.get(c));
 
 // splash();
 
-args.forEach((val, index) => {
+/* args.forEach((val, index) => {
 	specFiles = files.ls(`${process.cwd()}/${val}`);
 		specFile = specFiles.next();
 		let lineNumber = 0;
@@ -56,3 +76,4 @@ args.forEach((val, index) => {
 		}
 });
 
+*/
