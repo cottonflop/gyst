@@ -40,12 +40,18 @@ catalog.context("procs")
 
 catalog.set(/i am a regex (.*) with arbitrary (.*) groups in it!/, function(p) { console.log(p, `I enjoy riding the ${p[1]}, but not on the ${p[2]}!`); });
 catalog.set(/i am a regex with no groups in it!/, function() { console.log("I am the function attached to the second regex"); });
-catalog.set("i'm not even a regex, bro", function() { console.log("I am the function attached to the third regex"); });
+catalog.set("i'm not even a <thing>, bro", function(p) { console.log(`I am the function attached to the third regex, and i just got passed ${p.thing}.`); });
 
-({func, args} = catalog.get_call("i am a regex with with with and with with arbitrary whatwhatwhat what what groups in it!"));
-// console.log(m);
-// console.log(args)
-func(args);
+
+
+// ({func, args} = catalog.get_call("i am a regex with with with and with with arbitrary whatwhatwhat what what groups in it!"));
+
+// catalog.get_call("i'm not even a marmot, bro");
+({func, args} = catalog.get_call("i'm not even a marmot, bro"));
+// console.log(m)
+console.log(func)
+console.log(args)
+// func(args);
 
 
 // console.log(catalog.get(c));
