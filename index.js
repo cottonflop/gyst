@@ -29,6 +29,8 @@ args = process.argv;
 args.shift();
 args.shift();
 
+splash();
+
 
 // catalog.context("fnord");
 // catalog.set("whatwhat", "31337");
@@ -58,14 +60,22 @@ args.shift();
 
 // splash();
 
+processing = function(filePath) {
+		let msg = `Processing ${filePath}...`;
+		let size = msg.length + 4;
+		msg = chalk.yellow(msg);
+		console.log("=".repeat(size));
+		console.log(`| ${msg} |`);
+		console.log("=".repeat(size));
+}
+
 args.forEach((val, index) => {
 	specFiles = files.ls(`${process.cwd()}/${val}`);
 	specFile = specFiles.next();
 	// let lineNumber = 0;
 	while (!specFile.done) {
-		console.log("=======================");
-		console.log(`Processing ${specFile.value}...`);
-		console.log("=======================");
+		processing(specFile.value);
+
 		//specs = files.lines(specFile.value);
 		lexer.load(specFile.value);
 		var token = lexer.next();
