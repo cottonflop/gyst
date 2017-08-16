@@ -11,6 +11,7 @@ var git         = require('simple-git')();
 var touch       = require('touch');
 var fs          = require('fs');
 var files       = require('./lib/files.js');
+var lexer       = require('./lib/lexer.js');
 
 // var { options } = require('./lib/options.js');
 var catalog   = require('./lib/catalog.js')
@@ -35,21 +36,21 @@ args.shift();
 // catalog.context("default");
 // console.log(catalog.get("whatwhat"));
 
-catalog.context("procs")
+// catalog.context("procs")
 
-catalog.set(/i am a regex (.*) with arbitrary (.*) groups in it!/, function(p) { console.log(p, `I enjoy riding the ${p[1]}, but not on the ${p[2]}!`); });
-catalog.set(/i am a regex with no groups in it!/, function() { console.log("I am the function attached to the second regex"); });
-catalog.set("i'm not even a <thing>, bro", function(p) { console.log(`I am the function attached to the third regex, and i just got passed ${p.thing}.`); });
+// catalog.set(/i am a regex (.*) with arbitrary (.*) groups in it!/, function(p) { console.log(p, `I enjoy riding the ${p[1]}, but not on the ${p[2]}!`); });
+// catalog.set(/i am a regex with no groups in it!/, function() { console.log("I am the function attached to the second regex"); });
+// catalog.set("i'm not even a <thing>, bro", function(p) { console.log(`I am the function attached to the third regex, and i just got passed ${p.thing}.`); });
 
 
 
 // ({func, args} = catalog.get_call("i am a regex with with with and with with arbitrary whatwhatwhat what what groups in it!"));
 
 // catalog.get_call("i'm not even a marmot, bro");
-({func, args} = catalog.get_call("i'm not even a marmot, bro"));
+// ({func, args} = catalog.get_call("i'm not even a marmot, bro"));
 // console.log(m)
-console.log(func)
-console.log(args)
+// console.log(func)
+// console.log(args)
 // func(args);
 
 
@@ -57,28 +58,24 @@ console.log(args)
 
 // splash();
 
-/* args.forEach((val, index) => {
+args.forEach((val, index) => {
 	specFiles = files.ls(`${process.cwd()}/${val}`);
+	specFile = specFiles.next();
+	// let lineNumber = 0;
+	while (!specFile.done) {
+		console.log("=======================");
+		console.log(`Processing ${specFile.value}...`);
+		console.log("=======================");
+		//specs = files.lines(specFile.value);
+		lexer.load(specFile.value);
+		var token = lexer.next();
+		while (token !== undefined) {
+			console.log(token);
+			token = lexer.next();
+		}
+		// line = specs.next();
 		specFile = specFiles.next();
-		let lineNumber = 0;
-		while (!specFile.done) {
-			console.log("=======================");
-			console.log(`Processing ${specFile.value}...`);
-			console.log("=======================");
-			specs = files.lines(specFile.value);
-			line = specs.next();
-		while (!line.done) {
-			try {
-				lineNumber++;
-				parse(line.value);
-			} catch(err) {
-				console.log(`${err.message} (${specFile.value}:${lineNumber})`);
-			}
-	  		line = specs.next();
-		}
-			specFile = specFiles.next();
-			console.log();
-		}
-});
+		console.log();
+	}
+	});
 
-*/
