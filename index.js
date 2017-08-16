@@ -13,7 +13,6 @@ var fs          = require('fs');
 var files       = require('./lib/files.js');
 
 // var { options } = require('./lib/options.js');
-var { lex }   = require('./lib/lex.js')
 var catalog   = require('./lib/catalog.js')
 
 splash = function() {
