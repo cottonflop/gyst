@@ -59,14 +59,18 @@ splash();
 // console.log(catalog.get(c));
 
 // splash();
+error = function(token, msg) {
+	console.log(`Error at ${token.src}:${token.row}:${token.col}, ${msg}`);
+}
+
 
 processing = function(filePath) {
 		let msg = `Processing ${filePath}...`;
 		let size = msg.length + 4;
 		msg = chalk.yellow(msg);
-		console.log("=".repeat(size));
+		console.log(chalk.green("=".repeat(size)));
 		console.log(`| ${msg} |`);
-		console.log("=".repeat(size));
+		console.log(chalk.green("=".repeat(size)));
 }
 
 args.forEach((val, index) => {
@@ -75,15 +79,18 @@ args.forEach((val, index) => {
 	// let lineNumber = 0;
 	while (!specFile.done) {
 		processing(specFile.value);
+		let data = files.read(specFile.value);
 
-		//specs = files.lines(specFile.value);
-		lexer.load(specFile.value);
+		lexer.load(specFile.value, data);
 		var token = lexer.next();
 		while (token !== undefined) {
-			console.log(token);
+			switch (token.type) {
+				case "UNKNOWN":
+					error(token, `Unknown character "${token.data}"`);
+			}
 			token = lexer.next();
 		}
-		// line = specs.next();
+
 		specFile = specFiles.next();
 		console.log();
 	}
