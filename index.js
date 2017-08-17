@@ -60,39 +60,95 @@ splash();
 
 // splash();
 error = function(token, msg) {
-	console.log(`Error at ${token.src}:${token.row}:${token.col}, ${msg}`);
+	console.log(chalk.red(`Error at ${token.src}:${token.row}:${token.col}, ${msg}\n`), token);
 }
 
 
 processing = function(filePath) {
 		let msg = `Processing ${filePath}...`;
-		let size = msg.length + 4;
+		let size = msg.length + 2;
 		msg = chalk.yellow(msg);
-		console.log(chalk.green("=".repeat(size)));
-		console.log(`| ${msg} |`);
+		console.log(` ${msg} `);
 		console.log(chalk.green("=".repeat(size)));
 }
 
-args.forEach((val, index) => {
+
+var define = function(stack) {
+	if (typeof stack == "object") {
+		let name = stack.shift();
+		catalog.context("procs");
+		stack = stack.map(token => { return token.data });
+		catalog.set(name.data, stack);
+	} 
+}
+
+
+var execute = function(stack) {
+	if (typeof stack == "object") {
+		stack.forEach(function(x) {
+			console.log(x.data);
+		});
+	}
+}
+
+var execution_list = [];
+
+
+var parse = function(lexer) {
+
+	let mode = "NORMAL";
+	
+	let stack = [];
+	let procs = [];
+
+	let token = lexer.next();
+	while (token !== undefined) {
+		// console.log(token);
+		switch (token.type) {
+			case "SCENARIO":
+				execution_list.push(token);
+			case "PROCEDURE":
+			  mode = "DEFINE";
+			case "CALLPROC":
+			  stack.push(token);
+				break;
+			case "UNKNOWN":
+				error(token, `Bad keyword: ${token.data}`)
+				return;
+			case "ENDBLOCK":
+				if (mode == "DEFINE") {
+			  	define(stack);
+					console.log("\nTRYING TO DEFINE A FUNCTION", stack);
+			  	stack = [];
+			  	mode = "NORMAL";
+				}
+				break;
+			case "WHITESPACE":
+			case "NEWLINE":
+				break;
+			default:
+				// console.log(token.type, token.data)
+				break;
+		}
+		token = lexer.next();
+	}
+}
+
+
+args.forEach(function(val, index) {
 	specFiles = files.ls(`${process.cwd()}/${val}`);
 	specFile = specFiles.next();
-	// let lineNumber = 0;
 	while (!specFile.done) {
 		processing(specFile.value);
 		let data = files.read(specFile.value);
-
 		lexer.load(specFile.value, data);
-		var token = lexer.next();
-		while (token !== undefined) {
-			switch (token.type) {
-				case "UNKNOWN":
-					error(token, `Unknown character "${token.data}"`);
-			}
-			token = lexer.next();
-		}
+
+		parse(lexer);
 
 		specFile = specFiles.next();
 		console.log();
 	}
+	catalog.dump();
+	execute(execution_list);
 	});
 
