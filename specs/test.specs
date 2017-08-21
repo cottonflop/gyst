@@ -1,7 +1,10 @@
 @TAG1     @tag2 @munge  
       @indentedtag
 Feature: Tags!
-Given I am nothing but exposition
+	Given I am nothing but exposition
+	Given I am nothing but exposition
+	Given I am nothing but exposition
+	Given I am nothing but exposition
 
 @scenarioleveltag
 Scenario: eat 5 out of 20

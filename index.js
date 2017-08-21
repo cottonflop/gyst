@@ -11,7 +11,8 @@ var git         = require('simple-git')();
 var touch       = require('touch');
 var fs          = require('fs');
 var files       = require('./lib/files.js');
-var lexer       = require('./lib/lexer.js');
+var { lexer }   = require('./lib/blex.js');
+// var { rules }		= require('./lib/lexer_rules.js');
 var { heading } = require('./lib/common.js')
 
 // var { options } = require('./lib/options.js');
@@ -65,14 +66,6 @@ var error = function(token, msg) {
 }
 
 
-var define = function(stack) {
-	if (typeof stack == "object") {
-		catalog.context("procs");
-		catalog.set(stack[0].data, stack);
-	}
-}
-
-
 var execute = function(stack) {
 	if (typeof stack == "object") {
 		stack.forEach(function(x) {
@@ -83,38 +76,52 @@ var execute = function(stack) {
 
 var execution_list = [];
 
+var parse_feature = function(lexer) {
+	let t = lexer.next("feature");
+	let token = t.value;
+	while (token.type != "ENDBLOCK" && !t.done) {
+		token = t.value;
+		t = lexer.next();
+	}
+}
 
-var parse = function(lexer) {
-
-	let mode = "NORMAL";
-	
+var parse_procedure = function(name, lexer) {
+	let t = lexer.next("procedure");
+	let token = t.value;
 	let stack = [];
-	let procs = [];
-
-	let token = lexer.next();
-	while (token !== undefined) {
-		// console.log(token);
-		switch (token.type) {
+	while (!token.type == "ENDBLOCK" && !t.done) {
+		switch(token.type) {
 			case "UNKNOWN":
 				error(token, `Undefined command: "${token.data}"`)
-				return;
-			case "SCENARIO":
-				execution_list.push(token);
-				//fallthru
-			case "PROCEDURE":
-		  	stack = [];
-			  mode = "DEFINE";
-			  //fallthru
+				return false;
 			case "CALLPROC":
 			  stack.push(token);
 				break;
 			case "ENDBLOCK":
-				if (mode == "DEFINE") {
-			  	define(stack);
-			  	stack = [];
-					// console.log("\nTRYING TO DEFINE A FUNCTION", stack);
-			  	mode = "NORMAL";
-				}
+				return stack;
+			}
+		}
+
+	}
+
+var parse = function(lexer) {
+	let procs = [];
+
+	let t = lexer.next();
+	while (!t.done) {
+		token = t.value;
+		switch (token.type) {
+			case "UNKNOWN":
+				error(token, `Undefined command: "${token.data}"`)
+				return false;
+			case "FEATURE":
+				parse_feature(lexer));
+				break;
+			case "SCENARIO":
+				execution_list.push(token);
+				//fallthru
+			case "PROCEDURE":
+				procs.push(parse_procedure(token, lexer));
 				break;
 			case "WHITESPACE":
 			case "NEWLINE":
@@ -123,7 +130,8 @@ var parse = function(lexer) {
 				// console.log(token.type, token.data)
 				break;
 		}
-		token = lexer.next();
+		// console.log(token);
+		t = lexer.next("default");
 	}
 }
 
@@ -134,12 +142,11 @@ args.forEach(function(val, index) {
 	while (!specFile.done) {
 		heading(`Processing ${specFile.value}...`);
 		let data = files.read(specFile.value);
-		lexer.load(specFile.value, data);
-
-		parse(lexer);
+		// lexer.load(specFile.value, data);
+		lex = lexer(data, specFile.value)
+		parse(lex);
 
 		specFile = specFiles.next();
-		console.log();
 	}
 	catalog.dump();
 	execute(execution_list);
