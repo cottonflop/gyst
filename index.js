@@ -12,6 +12,7 @@ var touch       = require('touch');
 var fs          = require('fs');
 var files       = require('./lib/files.js');
 var lexer       = require('./lib/lexer.js');
+var { heading } = require('./lib/common.js')
 
 // var { options } = require('./lib/options.js');
 var catalog   = require('./lib/catalog.js')
@@ -59,34 +60,23 @@ splash();
 // console.log(catalog.get(c));
 
 // splash();
-error = function(token, msg) {
+var error = function(token, msg) {
 	console.log(chalk.red(`Error at ${token.src}:${token.row}:${token.col}, ${msg}\n`), token);
-}
-
-
-processing = function(filePath) {
-		let msg = `Processing ${filePath}...`;
-		let size = msg.length + 2;
-		msg = chalk.yellow(msg);
-		console.log(` ${msg} `);
-		console.log(chalk.green("=".repeat(size)));
 }
 
 
 var define = function(stack) {
 	if (typeof stack == "object") {
-		let name = stack.shift();
 		catalog.context("procs");
-		stack = stack.map(token => { return token.data });
-		catalog.set(name.data, stack);
-	} 
+		catalog.set(stack[0].data, stack);
+	}
 }
 
 
 var execute = function(stack) {
 	if (typeof stack == "object") {
 		stack.forEach(function(x) {
-			console.log(x.data);
+			// console.log(x.data);
 		});
 	}
 }
@@ -105,21 +95,24 @@ var parse = function(lexer) {
 	while (token !== undefined) {
 		// console.log(token);
 		switch (token.type) {
+			case "UNKNOWN":
+				error(token, `Undefined command: "${token.data}"`)
+				return;
 			case "SCENARIO":
 				execution_list.push(token);
+				//fallthru
 			case "PROCEDURE":
+		  	stack = [];
 			  mode = "DEFINE";
+			  //fallthru
 			case "CALLPROC":
 			  stack.push(token);
 				break;
-			case "UNKNOWN":
-				error(token, `Bad keyword: ${token.data}`)
-				return;
 			case "ENDBLOCK":
 				if (mode == "DEFINE") {
 			  	define(stack);
-					console.log("\nTRYING TO DEFINE A FUNCTION", stack);
 			  	stack = [];
+					// console.log("\nTRYING TO DEFINE A FUNCTION", stack);
 			  	mode = "NORMAL";
 				}
 				break;
@@ -139,7 +132,7 @@ args.forEach(function(val, index) {
 	specFiles = files.ls(`${process.cwd()}/${val}`);
 	specFile = specFiles.next();
 	while (!specFile.done) {
-		processing(specFile.value);
+		heading(`Processing ${specFile.value}...`);
 		let data = files.read(specFile.value);
 		lexer.load(specFile.value, data);
 
