@@ -60,7 +60,6 @@ splash();
 
 // console.log(catalog.get(c));
 
-// splash();
 var error = function(token, msg) {
 	console.log(chalk.red(`Error at ${token.src}:${token.row}:${token.col}, ${msg}\n`), token);
 }
