@@ -1,67 +1,41 @@
 #!/usr/bin/env node
+
 var chalk       = require('chalk');
 var clear       = require('clear');
-var cli         = require('cli');
+// var cli         = require('cli');
 var figlet      = require('figlet');
-var inquirer    = require('inquirer');
-var Preferences = require('preferences');
-var GitHubApi   = require('github');
-var _           = require('lodash');
-var git         = require('simple-git')();
-var touch       = require('touch');
 var fs          = require('fs');
 var files       = require('./lib/files.js');
-var { lexer }   = require('./lib/blex.js');
-// var { rules }		= require('./lib/lexer_rules.js');
-var { heading } = require('./lib/common.js')
-
-// var { options } = require('./lib/options.js');
 var catalog   = require('./lib/catalog.js')
 
-splash = function() {
-	clear();
-	console.log(
-		chalk.green(figlet.textSync('Gyst', { font: "doom", horizontalLayout: 'default' })),
-		"\n",
-		chalk.blue("version " + require('./package.json').version)
-	);
-}
+var { lexer }   = require('./lib/blex.js');
+var { heading, log } = require('./lib/common.js')
 
 args = process.argv;
 args.shift();
 args.shift();
 
-splash();
+var execution_list = [];
 
-
-// catalog.context("fnord");
-// catalog.set("whatwhat", "31337");
-// console.log(catalog.get("whatwhat"));
-// catalog.context("default");
-// console.log(catalog.get("whatwhat"));
-
-// catalog.context("procs")
-
-// catalog.set(/i am a regex (.*) with arbitrary (.*) groups in it!/, function(p) { console.log(p, `I enjoy riding the ${p[1]}, but not on the ${p[2]}!`); });
-// catalog.set(/i am a regex with no groups in it!/, function() { console.log("I am the function attached to the second regex"); });
-// catalog.set("i'm not even a <thing>, bro", function(p) { console.log(`I am the function attached to the third regex, and i just got passed ${p.thing}.`); });
+clear();
+console.log(
+	chalk.green(figlet.textSync('Gyst', { font: "doom", horizontalLayout: 'default' })),
+	"\n",
+	chalk.blue("😱 version " + require('./package.json').version)
+);
 
 
 
-// ({func, args} = catalog.get_call("i am a regex with with with and with with arbitrary whatwhatwhat what what groups in it!"));
+var register_proc = function(name, callstack) {
+	let last_context = catalog.current_context;
+	catalog.context("procs");
+	catalog.set(name, callstack);
+	catalog.context(last_context);
+}
 
-// catalog.get_call("i'm not even a marmot, bro");
-// ({func, args} = catalog.get_call("i'm not even a marmot, bro"));
-// console.log(m)
-// console.log(func)
-// console.log(args)
-// func(args);
-
-
-// console.log(catalog.get(c));
 
 var error = function(token, msg) {
-	console.log(chalk.red(`Error at ${token.src}:${token.row}:${token.col}, ${msg}\n`), token);
+	console.log(chalk.red(`Error at ${token.src}:${token.row}:${token.col}, ${msg}\n`));
 }
 
 
@@ -73,7 +47,9 @@ var execute = function(stack) {
 	}
 }
 
-var execution_list = [];
+
+
+
 
 var parse_feature = function(lexer) {
 	let t = lexer.next("feature");
@@ -85,21 +61,28 @@ var parse_feature = function(lexer) {
 }
 
 var parse_procedure = function(name, lexer) {
+	console.log(`WE'RE PARSING ${name.data}, BRO`);
+	console.log(name);
+
+	let proc_name = (name.data === undefined) ? name : name.data;
+
 	let t = lexer.next("procedure");
 	let token = t.value;
 	let stack = [];
 	while (!token.type == "ENDBLOCK" && !t.done) {
 		switch(token.type) {
 			case "UNKNOWN":
-				error(token, `Undefined command: "${token.data}"`)
+				error(token, `Undefined command: "${token.data}"`);
 				return false;
 			case "CALLPROC":
+				console.log(`IT'S A CALLPROC NAMED ${token.name}, BRO`);
 			  stack.push(token);
 				break;
 			case "ENDBLOCK":
 				return stack;
 			}
 		}
+	register_proc(proc_name);
 
 	}
 
@@ -111,16 +94,20 @@ var parse = function(lexer) {
 		token = t.value;
 		switch (token.type) {
 			case "UNKNOWN":
+				console.log("IT'S AN UNKNOWN TOKEN, BRO");
 				error(token, `Undefined command: "${token.data}"`)
 				return false;
 			case "FEATURE":
-				parse_feature(lexer));
+				console.log("IT'S A FEATURE, BRO");
+				parse_feature(lexer);
 				break;
 			case "SCENARIO":
+				console.log("IT'S A SCENARIO, BRO");
 				execution_list.push(token);
 				//fallthru
 			case "PROCEDURE":
-				procs.push(parse_procedure(token, lexer));
+				console.log("IT'S A PROCEDURE, BRO");
+				parse_procedure(token, lexer);
 				break;
 			case "WHITESPACE":
 			case "NEWLINE":
@@ -147,7 +134,18 @@ args.forEach(function(val, index) {
 
 		specFile = specFiles.next();
 	}
-	catalog.dump();
+	// console.log(catalog);
+	// catalog.dump("procs");
+	catalog.context("procs");
+	console.log(catalog.current_context);
+  let keys = catalog.catalog.get(catalog.current_context).keys();
+  let key = keys.next();
+  console.log(`======= DUMPING ${catalog.current_context}`);
+  while(!key.done) {
+    console.log(key.value, catalog.catalog.get(catalog.current_context).get(key.value));
+    key = keys.next();
+  }
+
 	execute(execution_list);
 	});
 
