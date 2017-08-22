@@ -6,7 +6,7 @@ var clear       = require('clear');
 var figlet      = require('figlet');
 var fs          = require('fs');
 var files       = require('./lib/files.js');
-var catalog   = require('./lib/catalog.js')
+// var catalog   = require('./lib/catalog.js')
 
 var { lexer }   = require('./lib/blex.js');
 var { heading, log } = require('./lib/common.js')
@@ -15,22 +15,24 @@ args = process.argv;
 args.shift();
 args.shift();
 
+
+
 var execution_list = [];
 
 clear();
 console.log(
 	chalk.green(figlet.textSync('Gyst', { font: "doom", horizontalLayout: 'default' })),
 	"\n",
-	chalk.blue("😱 version " + require('./package.json').version)
+	chalk.blue(" version " + require('./package.json').version)
 );
 
-
-
-var register_proc = function(name, callstack) {
-	let last_context = catalog.current_context;
-	catalog.context("procs");
-	catalog.set(name, callstack);
-	catalog.context(last_context);
+var procs = new Map();
+var call_proc = function(token) {
+	let proc_names = procs.keys();
+	let proc_name = proc_names.next();
+	while(!proc_name.done) {
+		
+	}
 }
 
 
@@ -39,16 +41,15 @@ var error = function(token, msg) {
 }
 
 
-var execute = function(stack) {
-	if (typeof stack == "object") {
-		stack.forEach(function(x) {
-			// console.log(x.data);
+var execute = function(callstack) {
+	if (typeof callstack == "object") {
+		callstack.forEach(function(x) {
+			if (typeof x == "function") {
+				x
+			}
 		});
 	}
 }
-
-
-
 
 
 var parse_feature = function(lexer) {
@@ -60,35 +61,28 @@ var parse_feature = function(lexer) {
 	}
 }
 
+
 var parse_procedure = function(name, lexer) {
-	console.log(`WE'RE PARSING ${name.data}, BRO`);
-	console.log(name);
-
 	let proc_name = (name.data === undefined) ? name : name.data;
-
 	let t = lexer.next("procedure");
 	let token = t.value;
 	let stack = [];
 	while (!token.type == "ENDBLOCK" && !t.done) {
 		switch(token.type) {
 			case "UNKNOWN":
-				error(token, `Undefined command: "${token.data}"`);
+				error(token, `Unexpected token: "${token.data}"`);
 				return false;
 			case "CALLPROC":
-				console.log(`IT'S A CALLPROC NAMED ${token.name}, BRO`);
 			  stack.push(token);
 				break;
 			case "ENDBLOCK":
-				return stack;
+				break;
 			}
 		}
-	register_proc(proc_name);
-
 	}
 
-var parse = function(lexer) {
-	let procs = [];
 
+var parse = function(lexer) {
 	let t = lexer.next();
 	while (!t.done) {
 		token = t.value;
@@ -98,11 +92,11 @@ var parse = function(lexer) {
 				error(token, `Undefined command: "${token.data}"`)
 				return false;
 			case "FEATURE":
-				console.log("IT'S A FEATURE, BRO");
+				// console.log("IT'S A FEATURE, BRO");
 				parse_feature(lexer);
 				break;
 			case "SCENARIO":
-				console.log("IT'S A SCENARIO, BRO");
+				// console.log("IT'S A SCENARIO, BRO");
 				execution_list.push(token);
 				//fallthru
 			case "PROCEDURE":
@@ -134,8 +128,6 @@ args.forEach(function(val, index) {
 
 		specFile = specFiles.next();
 	}
-	// console.log(catalog);
-	// catalog.dump("procs");
 	catalog.context("procs");
 	console.log(catalog.current_context);
   let keys = catalog.catalog.get(catalog.current_context).keys();
