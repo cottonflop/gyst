@@ -26,12 +26,13 @@ console.log(
 	chalk.blue(" version " + require('./package.json').version)
 );
 
+
 var procs = new Map();
 var call_proc = function(token) {
 	let proc_names = procs.keys();
 	let proc_name = proc_names.next();
 	while(!proc_name.done) {
-		
+
 	}
 }
 
@@ -44,74 +45,60 @@ var error = function(token, msg) {
 var execute = function(callstack) {
 	if (typeof callstack == "object") {
 		callstack.forEach(function(x) {
-			if (typeof x == "function") {
-				x
-			}
+			console.log(x);
 		});
 	}
 }
 
 
 var parse_feature = function(lexer) {
-	let t = lexer.next("feature");
-	let token = t.value;
-	while (token.type != "ENDBLOCK" && !t.done) {
-		token = t.value;
-		t = lexer.next();
+	let token = lexer.next("feature");
+	while (!token.done && token.value.type != "ENDBLOCK") {
+		token = lexer.next();
 	}
 }
 
 
-var parse_procedure = function(name, lexer) {
-	let proc_name = (name.data === undefined) ? name : name.data;
-	let t = lexer.next("procedure");
-	let token = t.value;
+var parse_procedure = function(lexer) {
+	let token = lexer.next("procedure");
 	let stack = [];
-	while (!token.type == "ENDBLOCK" && !t.done) {
-		switch(token.type) {
-			case "UNKNOWN":
-				error(token, `Unexpected token: "${token.data}"`);
-				return false;
+	while (!token.done && token.value.type != "ENDBLOCK") {
+		switch(token.value.type) {
 			case "CALLPROC":
-			  stack.push(token);
+			  stack.push(token.value);
 				break;
-			case "ENDBLOCK":
-				break;
+			case "UNKNOWN":
+				error(token, `Unexpected token: "${token.value.data}"`);
+				return false;
 			}
+		token = lexer.next();
 		}
+		return stack;
 	}
 
 
 var parse = function(lexer) {
-	let t = lexer.next();
-	while (!t.done) {
-		token = t.value;
-		switch (token.type) {
+	let token = lexer.next();
+	while (!token.done) {
+		switch (token.value.type) {
 			case "UNKNOWN":
-				console.log("IT'S AN UNKNOWN TOKEN, BRO");
-				error(token, `Undefined command: "${token.data}"`)
+				error(token, `Undefined command: "${token.value.data}"`)
 				return false;
 			case "FEATURE":
-				// console.log("IT'S A FEATURE, BRO");
 				parse_feature(lexer);
 				break;
 			case "SCENARIO":
-				// console.log("IT'S A SCENARIO, BRO");
-				execution_list.push(token);
-				//fallthru
+				execution_list.push(token.value);
 			case "PROCEDURE":
-				console.log("IT'S A PROCEDURE, BRO");
-				parse_procedure(token, lexer);
+				procs.set(token.value.data, parse_procedure(lexer));
 				break;
 			case "WHITESPACE":
 			case "NEWLINE":
 				break;
 			default:
-				// console.log(token.type, token.data)
 				break;
 		}
-		// console.log(token);
-		t = lexer.next("default");
+		token = lexer.next("default");
 	}
 }
 
@@ -125,18 +112,17 @@ args.forEach(function(val, index) {
 		// lexer.load(specFile.value, data);
 		lex = lexer(data, specFile.value)
 		parse(lex);
-
 		specFile = specFiles.next();
 	}
-	catalog.context("procs");
-	console.log(catalog.current_context);
-  let keys = catalog.catalog.get(catalog.current_context).keys();
+
+  let keys = procs.keys();
   let key = keys.next();
-  console.log(`======= DUMPING ${catalog.current_context}`);
-  while(!key.done) {
-    console.log(key.value, catalog.catalog.get(catalog.current_context).get(key.value));
-    key = keys.next();
-  }
+  // console.log(procs);
+  // while(!key.done) {
+  // 	console.log("==========================");
+  //   console.log(key.value, procs.get(key.value));
+  //   key = keys.next();
+  // }
 
 	execute(execution_list);
 	});

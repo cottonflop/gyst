@@ -9,7 +9,6 @@ Feature: Tags!
 @scenarioleveltag
 Scenario: eat 5 out of 20
 	Given there are 20 cucumbers
-	@sdfsdfdsfdsdsfdfs
 	When I eat 5 cucumbers
 	Then I should have 15 cucumbers
 	GIVEN wjhbdsfsd
