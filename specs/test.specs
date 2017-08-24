@@ -1,7 +1,17 @@
+@TAG1     @tag2 @munge  
+      @indentedtag
+Feature: Tags!
+	Given I am nothing but exposition
+	Given I am nothing but exposition
+	Given I am nothing but exposition
+	Given I am nothing but exposition
+
+@scenarioleveltag
 Scenario: eat 5 out of 20
 	Given there are 20 cucumbers
 	When I eat 5 cucumbers
 	Then I should have 15 cucumbers
+	GIVEN wjhbdsfsd
 
 Scenario: Duct tape a spider to the garage
 	Given I have a garage

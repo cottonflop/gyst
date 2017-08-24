@@ -1,4 +1,0 @@
-Scenario: I'm a nested file
-	Given I am a nested file
-	When I find this file
-	Then I shouldn't flip out and complain

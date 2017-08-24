@@ -1,79 +1,129 @@
 #!/usr/bin/env node
+
 var chalk       = require('chalk');
 var clear       = require('clear');
-var cli         = require('cli');
+// var cli         = require('cli');
 var figlet      = require('figlet');
-var inquirer    = require('inquirer');
-var Preferences = require('preferences');
-var GitHubApi   = require('github');
-var _           = require('lodash');
-var git         = require('simple-git')();
-var touch       = require('touch');
 var fs          = require('fs');
 var files       = require('./lib/files.js');
+// var catalog   = require('./lib/catalog.js')
 
-// var { options } = require('./lib/options.js');
-var { parse }   = require('./lib/parser.js')
-var catalog   = require('./lib/catalog.js')
-
-splash = function() {
-	clear();
-	console.log(
-		chalk.green(figlet.textSync('Gyst', { font: "doom", horizontalLayout: 'default' })),
-		"\n",
-		chalk.blue("version " + require('./package.json').version)
-	);
-}
+var { lexer }   = require('./lib/blex.js');
+var { heading, log } = require('./lib/common.js')
 
 args = process.argv;
 args.shift();
 args.shift();
 
 
-// catalog.context("fnord");
-// catalog.set("whatwhat", "31337");
-// console.log(catalog.get("whatwhat"));
-// catalog.context("default");
-// console.log(catalog.get("whatwhat"));
 
-catalog.context("procs")
+var execution_list = [];
 
-catalog.set(/i am a regex (.*) with arbitrary (.*) groups in it!/, function(p) { console.log(p, `I enjoy riding the ${p[1]}, but not on the ${p[2]}!`); });
-catalog.set(/i am a regex with no groups in it!/, function() { console.log("I am the function attached to the second regex"); });
-catalog.set("i'm not even a regex, bro", function() { console.log("I am the function attached to the third regex"); });
-
-({func, args} = catalog.get_call("i am a regex with with with and with with arbitrary whatwhatwhat what what groups in it!"));
-// console.log(m);
-// console.log(args)
-func(args);
+clear();
+console.log(
+	chalk.green(figlet.textSync('Gyst', { font: "doom", horizontalLayout: 'default' })),
+	"\n",
+	chalk.blue(" version " + require('./package.json').version)
+);
 
 
-// console.log(catalog.get(c));
+var procs = new Map();
+var call_proc = function(token) {
+	let proc_names = procs.keys();
+	let proc_name = proc_names.next();
+	while(!proc_name.done) {
 
-// splash();
+	}
+}
 
-/* args.forEach((val, index) => {
-	specFiles = files.ls(`${process.cwd()}/${val}`);
-		specFile = specFiles.next();
-		let lineNumber = 0;
-		while (!specFile.done) {
-			console.log("=======================");
-			console.log(`Processing ${specFile.value}...`);
-			console.log("=======================");
-			specs = files.lines(specFile.value);
-			line = specs.next();
-		while (!line.done) {
-			try {
-				lineNumber++;
-				parse(line.value);
-			} catch(err) {
-				console.log(`${err.message} (${specFile.value}:${lineNumber})`);
+
+var error = function(token, msg) {
+	console.log(chalk.red(`Error at ${token.src}:${token.row}:${token.col}, ${msg}\n`));
+}
+
+
+var execute = function(callstack) {
+	if (typeof callstack == "object") {
+		callstack.forEach(function(x) {
+			console.log(x);
+		});
+	}
+}
+
+
+var parse_feature = function(lexer) {
+	let token = lexer.next("feature");
+	while (!token.done && token.value.type != "ENDBLOCK") {
+		token = lexer.next();
+	}
+}
+
+
+var parse_procedure = function(lexer) {
+	let token = lexer.next("procedure");
+	let stack = [];
+	while (!token.done && token.value.type != "ENDBLOCK") {
+		switch(token.value.type) {
+			case "CALLPROC":
+			  stack.push(token.value);
+				break;
+			case "UNKNOWN":
+				error(token, `Unexpected token: "${token.value.data}"`);
+				return false;
 			}
-	  		line = specs.next();
+		token = lexer.next();
 		}
-			specFile = specFiles.next();
-			console.log();
-		}
-});
+		return stack;
+	}
 
-*/
+
+var parse = function(lexer) {
+	let token = lexer.next();
+	while (!token.done) {
+		switch (token.value.type) {
+			case "UNKNOWN":
+				error(token, `Undefined command: "${token.value.data}"`)
+				return false;
+			case "FEATURE":
+				parse_feature(lexer);
+				break;
+			case "SCENARIO":
+				execution_list.push(token.value);
+			case "PROCEDURE":
+				procs.set(token.value.data, parse_procedure(lexer));
+				break;
+			case "WHITESPACE":
+			case "NEWLINE":
+				break;
+			default:
+				break;
+		}
+		token = lexer.next("default");
+	}
+}
+
+
+args.forEach(function(val, index) {
+	specFiles = files.ls(`${process.cwd()}/${val}`);
+	specFile = specFiles.next();
+	while (!specFile.done) {
+		heading(`Processing ${specFile.value}...`);
+		let data = files.read(specFile.value);
+		// lexer.load(specFile.value, data);
+		lex = lexer(data, specFile.value)
+		parse(lex);
+		specFile = specFiles.next();
+	}
+
+  let keys = procs.keys();
+  let key = keys.next();
+  // console.log(procs);
+  // while(!key.done) {
+  // 	console.log("==========================");
+  //   console.log(key.value, procs.get(key.value));
+  //   key = keys.next();
+  // }
+
+	execute(execution_list);
+	});
+
