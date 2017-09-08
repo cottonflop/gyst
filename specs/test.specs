@@ -28,3 +28,8 @@ Procedure: have a spider
 	And I find a spider
 	When I pay for the spider
 	Then I should have a spider
+
+Procedure: run some native code
+  #{ console.log("oh, hello there.") }#
+  #{ console.log("oh, hello there.") }#
+  #{ console.log("oh, hello there.") }#
