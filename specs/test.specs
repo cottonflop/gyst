@@ -12,6 +12,7 @@ Scenario: eat 5 out of 20
 	When I eat 5 cucumbers
 	Then I should have 15 cucumbers
 	GIVEN wjhbdsfsd
+	given fnord
 
 Scenario: Duct tape a spider to the garage
 	Given I have a garage
@@ -28,3 +29,8 @@ Procedure: have a spider
 	And I find a spider
 	When I pay for the spider
 	Then I should have a spider
+
+Procedure: run some native code
+  #{ console.log("oh, hello there.") }#
+  #{ console.log("oh, hello there.") }#
+  #{ console.log("oh, hello there.") }#
