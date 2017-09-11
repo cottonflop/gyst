@@ -29,7 +29,9 @@ Procedure: have a spider
 	When I pay for the spider
 	Then I should have a spider
 
-Procedure: run some native code
+Scenario: run some native code
   #{ console.log("oh, hello there.") }#
   #{ console.log("oh, hello there.") }#
-  #{ console.log("oh, hello there.") }#
+  #{ console.log("oh, hello there.")
+  can i work on multiple lines
+  can i ever? }#
