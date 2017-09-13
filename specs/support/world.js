@@ -1,32 +1,27 @@
-var procs = new Map();
-var call_proc = function(token) {
-	let proc_names = procs.keys();
-	let proc_name = proc_names.next();
-	while (!proc_name.done) {}
+var step_defs = new Map();
+var data = new Map();
+
+var find_step_def = function(token) {
+	
 }
 
 
-var pre = function() {
+//called before all tests
+var before = function() {
 	//TODO: write prereq stuff
 	console.log("called setup stuff");
 }
 
 
-var post = function() {
+//called after all tests
+var after = function() {
 	//TODO: write post stuff
 	console.log("called post cleanup stuff");
 }
 
 
-var import_procs = function(in_procs) {
-	if (Array.isArray(in_procs)) {
-
-	} else if (Object)
-}
-
 module.exports = {
-	procs: procs,
-	pre: pre,
-	post: post,
-	procs: fnord
+	step_defs: step_defs,
+	before: before,
+	after: after,
 }

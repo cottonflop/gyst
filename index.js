@@ -10,7 +10,9 @@ let registry = require('./lib/registry.js')();
 
 let {	lexer } = require('bluesocks');
 let rules = require('./lib/rules');
-let { heading, log } = require('./lib/common.js')
+let { heading, log } = require('./lib/common.js');
+
+let world = {};
 
 // let { functions, pre, post }
 
@@ -42,7 +44,17 @@ let error = function(token, msg) {
 
 let execute = function(callstack) {
 	if (callstack instanceof Array) {
-		for (x of callstack) console.log(x.data)
+		console.log("callstack is totes an array")
+		for (x of callstack) {
+			execute(x.data);
+		}
+	} else if (callstack instanceof Function) {
+		callstack.apply(world);
+		console.log("callstack is totes a function");
+	} else if (typeof callstack == "string") {
+		console.log("callstack is totes a string" + callstack)
+	} else {
+		console.log("Well, callstack was neither an array, a function, or a string...: " + callstack);
 	}
 	// console.log(callstack);
 	// switch (typeof callstack) {
@@ -120,7 +132,6 @@ let parse_native = function(lexer) {
 
 
 
-
 let parse = function(lexer) {
 	let token = lexer.next();
 	while (!token.done) {
@@ -151,8 +162,14 @@ let parse = function(lexer) {
 args.forEach(function(val, index) {
 	specFiles = files.ls(`${process.cwd()}/${val}`);
 	specFile = specFiles.next();
+	let i = 0;
 	while (!specFile.done) {
-		if (specFile.value.toLowerCase().endsWith(".specs")) {
+		console.log(++i);
+		if (specFile.value.toLowerCase().endsWith("world.js")) {
+			console.log("found a world file");
+			world = require(specFile.value);
+			// console.log(world);
+		} else if (specFile.value.toLowerCase().endsWith(".specs")) {
 			heading(`Processing ${specFile.value}...`);
 			let data = files.read(specFile.value);
 			lex = lexer(data, specFile.value, rules);

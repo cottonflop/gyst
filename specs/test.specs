@@ -30,8 +30,7 @@ Procedure: have a spider
 	Then I should have a spider
 
 Scenario: run some native code
-  #{ console.log("oh, hello there.") }#
-  #{ console.log("oh, hello there.") }#
-  #{ console.log("oh, hello there.")
-  can i work on multiple lines
-  can i ever? }#
+  #{ console.log("this is some native code.") }#
+  #{ console.log("this is more native code that should in a different function block.");
+  console.log("this is on another line in the same function block.");
+  console.log("third line in function block!"); }#
