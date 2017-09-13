@@ -1,0 +1,6 @@
+meeting notes
+
+* reorder summary page by version/other stuff
+* update contact data on import?
+  * send reports to "TSM"?
+* 
