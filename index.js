@@ -87,16 +87,14 @@ let execute = function(callstack) {
 }
 
 
-let parse_feature = function(lexer) {
-	let token = lexer.next();
+let parse_feature = function(token, lexer) {
 	while (!token.done && token.value.type != "ENDBLOCK") {
 		token = lexer.next();
 	}
 }
 
 
-let parse_procedure = function(lexer) {
-	let token = lexer.next();
+let parse_procedure = function(token, lexer) {
 	let stack = [];
 	while (!token.done && token.value.type != "ENDBLOCK") {
 		switch (token.value.type) {
@@ -104,7 +102,7 @@ let parse_procedure = function(lexer) {
 				stack.push(token.value);
 				break;
 			case "NATIVE":
-				stack.push(parse_native(lexer));
+				stack.push(parse_native(token, lexer));
 				break;
 			case "UNKNOWN":
 				error(token, `Unexpected token: "${token.value.data}"`);
@@ -120,8 +118,7 @@ let wrap_function = function(s) {
 }
 
 
-let parse_native = function(lexer) {
-	let token = lexer.next();
+let parse_native = function(token, lexer) {
 	let out = [];
 	while (!token.done && token.value.type != "ENDBLOCK") {
 		out.push(token.value.data)
@@ -130,6 +127,15 @@ let parse_native = function(lexer) {
 	return wrap_function(out.join("\n"));
 }
 
+
+let parse_scenario_outline = function(token, lexer) {
+	// let token = lexer.next();
+	//read in as a procedure, but don't register just yet...
+	//read in examples table
+	//once read in, adjust the calling line so it has parameters matching the ones given in examples table
+	//NOW register procedure
+	//NOW add an execute call to the procedure, once for each line of the examples table
+}
 
 
 let parse = function(lexer) {
@@ -141,12 +147,15 @@ let parse = function(lexer) {
 				error(token, `Undefined command: "${token.value.data}"`)
 				return false;
 			case "FEATURE":
-				parse_feature(lexer);
+				parse_feature(token, lexer);
 				break;
 			case "SCENARIO":
 				execution_list.push(token.value);
 			case "PROCEDURE":
-				registry.register(token.value.data, parse_procedure(lexer));
+				registry.register(token.value.data, parse_procedure(token, lexer));
+				break;
+			case "SCENARIOOUTLINE":
+				parse_scenario_outline(token, lexer);
 				break;
 			case "WHITESPACE":
 			case "NEWLINE":
